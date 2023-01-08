@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>小庄同学的英语之路</title>
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <!-- 外部css初始化 -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.staticfile.org/minireset.css/0.0.2/minireset.min.css"
+    />
+    <link
+      rel="stylesheet"
+      href="https://unpkg.com/element-ui/lib/theme-chalk/index.css"
+    />
+    <link rel="stylesheet/less" href="less.less" />
+    <script src="https://cdn.bootcdn.net/ajax/libs/less.js/4.1.2/less.min.js"></script>
+  </head>
+  <!-- 外部引入vue2.6.14 -->
+  <script src="https://cdn.jsdelivr.net/npm/vue@2/dist/vue.js"></script>
+  <!-- 关闭DevTool插件提示:去插件的安装路径修改mainfest.json中的persistentrue-->
+  <!-- 关闭生产提示 -->
+  <script type="text/javascript">
+    Vue.config.productionTip = false;
+  </script>
+  <!--引入外部js -->
+  <script type="text/javascript" src="defaultTableDataArr.js"></script>
+  <body style="overflow: -Scroll; overflow-y: hidden">
+    <div id="app">
+      <div class="container">
+        <el-table
+          ref="table"
+          class="element-table"
+          stripe
+          @cell-mouse-enter="cellMouseEnter"
+          @cell-mouse-leave="cellMouseLeave"
+          @cell-dblclick="cellDblclick"
+          @cell-click="cellClick"
+          :data="trueTableDataArr[currentIndex-1]"
+          :height="heightDifference"
+        >
+          <el-table-column prop="word" label="单词" width="150" align="center">
+            <template slot-scope="scope">
+              <el-popover
+                trigger="click"
+                placement="left-end"
+                :offset="Number(-20)"
+              >
+                <p>
+                  <span style="color: red">批注:</span> {{ scope.row.wordMark }}
+                </p>
+                <div slot="reference" class="name-wrapper">
+                  {{ scope.row.word }}
+                </div>
+              </el-popover>
+            </template>
+          </el-table-column>
+          <el-table-column label="短时" align="center">
+            <el-table-column label="3小时" align="center">
+              <el-table-column
+                align="center"
+                label="学习"
+                prop="shortThreeStudy"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="shortThreeReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="shortThreeRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table-column>
+          <el-table-column label="长时" align="center">
+            <el-table-column label="1天" align="center">
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="longFirstReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="longFirstRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="2天" align="center">
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="longSecondReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="longSecondRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="4天" align="center">
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="longFourthReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="longFourthRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="7天" align="center">
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="longSeventhReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="longSeventhRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="15天" align="center">
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="longFifteenthReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="longFifteenthRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+            <el-table-column label="30天" align="center">
+              <el-table-column
+                align="center"
+                label="复习"
+                prop="longMonthReview"
+              >
+              </el-table-column>
+              <el-table-column
+                align="center"
+                label="记忆"
+                prop="longMonthRemember"
+              >
+              </el-table-column>
+            </el-table-column>
+          </el-table-column>
+        </el-table>
+      </div>
+      <!-- 分页器 -->
+      <div
+        ref="pagination"
+        style="
+          width: 100vw;
+          height: 40px;
+          background-color: #fff;
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        "
+      >
+        <span class="msg" data-end="2023-12-24 00:00" style="font-size: 13px"
+          >距离考研还剩</span
+        >
+        <el-pagination
+          @current-change="handleCurrentChange"
+          :current-page="currentIndex"
+          layout="total,prev, pager, next, jumper"
+          :page-size="90"
+          :total="1472"
+        >
+        </el-pagination>
+        <el-button size="mini" style="margin-left: 20px" @click="backTop()"
+          >返回顶部</el-button
+        >
+        <el-button size="mini" @click="saveInfo()">保存导出</el-button>
+        <el-button size="mini" @click="centerDialogVisible = true"
+          >清除全部缓存</el-button
+        >
+      </div>
+      <!-- 输入弹出框-->
+      <el-dialog
+        :show-close="false"
+        :close-on-click-modal="false"
+        title="请输入线上数据"
+        :visible.sync="dialogVisible"
+        width="30%"
+      >
+        <el-input
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 4}"
+          placeholder="请输入内容"
+          v-model="onLineTableDataArr"
+        >
+        </el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="cancelInput()">取 消</el-button>
+          <el-button type="primary" @click="confirmInput()">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 清除缓存弹出框 -->
+      <el-dialog
+        title="警告"
+        :visible.sync="centerDialogVisible"
+        width="30%"
+        center
+      >
+        <span>确定要清除全部缓存吗?请提前保存!</span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="centerDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="cleanInfo()">确 定</el-button>
+        </span>
+      </el-dialog>
+      <!-- 保存信息的弹出输入栏-->
+      <el-dialog
+        :show-close="false"
+        :close-on-click-modal="false"
+        title="请复制本次保存的数据"
+        :visible.sync="exportVisible"
+        width="30%"
+      >
+        <el-input
+          type="textarea"
+          :autosize="{ minRows: 2, maxRows: 4}"
+          placeholder="请输入内容"
+          v-model="exportTableDataArr"
+        >
+        </el-input>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="exportVisible=false"
+            >确 定</el-button
+          >
+        </span>
+      </el-dialog>
+    </div>
+  </body>
+  <!-- import Vue before Element -->
+  <script src="https://unpkg.com/vue@2/dist/vue.js"></script>
+  <!-- import JavaScript -->
+  <script src="https://unpkg.com/element-ui/lib/index.js"></script>
+  <script src="http://lib.sinaapp.com/js/jquery/1.9.1/jquery-1.9.1.min.js"></script>
+  <script>
+    new Vue({
+      el: "#app",
+      data: function () {
+        return {
+          // 显示输入弹窗
+          dialogVisible: false,
+          // 显示清除缓存弹窗
+          centerDialogVisible: false,
+          // 显示导出弹窗
+          exportVisible: false,
+          // 线上数据
+          onLineTableDataArr: null,
+          // 默认数据,没有对错,全部为空
+          defaultTableDataArr: [],
+          // 实际在用的数据
+          trueTableDataArr: [],
+          // 导出数据
+          exportTableDataArr: [],
+          // 高度之差,开始计算
+          heightDifference: 0,
+          // 当前下标
+          currentIndex: 1,
+          prepWordDom: "",
+        };
+      },
+      computed: {},
+      methods: {
+        // 取消输入线上数据时触发
+        cancelInput() {
+          // 将用户胡乱输入的'线上数据'清空
+          this.onLineTableDataArr = null;
+          // 既然用户没有线上数据,则开始使用默认数据,也就是将默认数据填充到实际在用的数据
+          this.defaultTableDataArr = defaultTableDataArr;
+          this.trueTableDataArr = this.defaultTableDataArr;
+          // 再将这个默认数据填充到localStorage中的localTableDataArr
+          localStorage.setItem(
+            "localTableDataArr",
+            JSON.stringify(this.defaultTableDataArr)
+          );
+          // 关闭弹窗
+          this.dialogVisible = false;
+        },
+        // 确定输入线上数据时触发
+        confirmInput() {
+          if (this.onLineTableDataArr) {
+            // 将用户输入的'线上数据'填充到实际在用的数据
+            this.trueTableDataArr = JSON.parse(this.onLineTableDataArr);
+            // 再将这个线上数据填充到localStorage中的localTableDataArr
+            localStorage.setItem(
+              "localTableDataArr",
+              JSON.stringify(this.onLineTableDataArr)
+            );
+            // 关闭弹窗
+            this.dialogVisible = false;
+          } else {
+            this.$message({
+              message: "请输入线上数据",
+              type: "warning",
+            });
+          }
+        },
+        closeInput() {
+          this.onLineTableDataArr = null;
+          // 开始使用本地数据
+          // 如果发现没有localTableDataArr,则先从本地json文件中获取默认defaultTableDataArr数据,并需要打开弹窗让用户判断是否需要输入线上数据
+          //           this.defaultTableData = defaultTableDataArr;
+          //  // 并且将默认数据defaultTableDataArr存入localstorage
+          localStorage.setItem(
+            "localTableDataArr",
+            JSON.stringify(this.defaultTableData)
+          );
+        },
+        // 返回容器table的顶部
+        backTop() {
+          console.log(
+            this.$refs.table.$el.querySelector(".el-table__body-wrapper")
+              .scrollTop
+          );
+          this.$refs.table.$el.querySelector(
+            ".el-table__body-wrapper"
+          ).scrollTop = 0;
+        },
+        // 清除全部缓存,重新加载
+        cleanInfo() {
+          localStorage.clear();
+          this.centerDialogVisible = false;
+          // 重新加载整个窗口
+          window.location.reload();
+        },
+        // 保存信息导出
+        saveInfo() {
+          // 获取localStorage中的localTableDataArr
+          let localTableDataArr = localStorage.getItem("localTableDataArr");
+          // 将localTableDataArr赋值给exportTableDataArr
+          this.exportTableDataArr = localTableDataArr;
+          // 打开导出弹窗
+          this.exportVisible = true;
+        },
+        // currentPage当前页改变时会触发,val是当前页
+        handleCurrentChange(val) {
+          this.currentIndex = val;
+        },
+        // 双击表格
+        cellDblclick(row, column, cell, event) {
+          console.log("双击");
+          //点击的是其他列,并且第一列已经有颜色了
+          if (column.label != "单词") {
+            let cellName = column.property;
+            if (row[cellName] !== " ") {
+              row[cellName] = " ";
+            }
+          }
+        },
+        //  单击表格
+        cellClick(row, column, cell, e) {
+          //点击的不是第一列
+          if (column.label != "单词") {
+            let cellName = column.property;
+            // 如果点击的是内容为√、×、空的表格
+            if (row[cellName] == "√" || row[cellName] == "×") {
+              // 如果点击的是√,则变为×
+              if (row[cellName] == "√") {
+                row[cellName] = "×";
+              } else {
+                // 如果点击的是×,则变为√
+                row[cellName] = "√";
+              }
+            } else if (row[cellName] == " ") {
+              // 如果点击的是空的表格,则变为√
+              row[cellName] = "√";
+            }
+            // 更新到localStorage中
+            localStorage.setItem(
+              "localTableDataArr",
+              JSON.stringify(this.trueTableDataArr)
+            );
+          }
+          //点击的是其他列,并且第一列已经有颜色了
+          if (column.label != "单词") {
+            if (this.prepWordDom !== "") {
+              //  需要把第一列的颜色清空 也就是this.prepWordDom.style.backgroundColor = "";
+              this.prepWordDom.style.backgroundColor = "";
+            }
+          }
+          // 第一次点击
+          if (this.prepWordDom == "") {
+            // 点击的是第一列,颜色必定为空,所以直接赋颜色,并把本次的cellDom元素赋值给prepWordDom
+            if (column.label == "单词") {
+              cell.style.backgroundColor = "#2bd863";
+              this.prepWordDom = cell;
+            }
+          } else if (this.prepWordDom !== "") {
+            // 如果第二次点击的是第一列,那么就把第一次点击的颜色清空,并把本次的cellDom元素赋值给prepWordDom
+            if (column.label == "单词") {
+              this.prepWordDom.style.backgroundColor = "";
+              cell.style.backgroundColor = "#2bd863";
+              this.prepWordDom = cell;
+            }
+          }
+        },
+        //  单击表格的某一行
+        rowClick(row, column, event) {
+          console.log("rowClick的row--->", row);
+          console.log("rowClick的column--->", column);
+          console.log("rowClick的event--->", event);
+        },
+        // 鼠标移入表格
+        cellMouseEnter(row, column, cell, event) {
+          // cell是td的dom对象
+          if (column.label !== "单词") {
+            cell.style.backgroundColor = "orange";
+          } else {
+          }
+          // 加上point小手
+          cell.style.cursor = "pointer";
+        },
+        // 鼠标移出表格
+        cellMouseLeave(row, column, cell, event) {
+          if (column.label !== "单词") {
+            cell.style.backgroundColor = "";
+          }
+          // cell是td的dom对象
+        },
+      },
+
+      created() {
+        // console.log("默认数据", defaultTableDataArr);
+        // 判断localstorage中是否有localTableDataArr
+        if (localStorage.getItem("localTableDataArr")) {
+          // 如果发现有localTableDataArr数据,那么trueTableDataArr就要采用这个一个localTableDataArr数据
+          this.trueTableDataArr = JSON.parse(
+            localStorage.getItem("localTableDataArr")
+          );
+        } else {
+          // 打开线上数据输入框弹窗
+          this.dialogVisible = true;
+        }
+      },
+      mounted() {
+        $(".msg")
+          //  每次更新倒计时的主要逻辑
+          .on("updateEndTime", function () {
+            var now = new Date().getTime();
+            var diff = new Date($(this).attr("data-end")).getTime() - now;
+            var timeStr = [];
+            if (diff > 0) {
+              diff = ~~(diff / 1000); // 相差的时间 转换为 秒
+              // >>>
+              timeStr.push(~~(diff / 86400)); // 天数
+              diff = diff % 86400;
+              // <<<
+              // console.log(diff)
+              // >>>
+              timeStr.push(~~(diff / 3600)); // 小时
+              diff = diff % 3600; // 取余数，整数都被算到上面的小时里面了。余下的秒数一定小于1个小时，如果大于一个小时，上面就会多1
+              // <<<
+              // >>>
+              timeStr.push(~~(diff / 60)); // 分钟
+              diff = diff % 60;
+              // <<<
+              timeStr.push(diff); // 秒
+
+              $(this).text(
+                "距离考研还剩" +
+                  timeStr[0] +
+                  "天" +
+                  timeStr[1] +
+                  "小时" +
+                  timeStr[2] +
+                  "分" +
+                  timeStr[3] +
+                  "秒"
+              );
+            } else {
+              clearInterval($(this).attr("timeId"));
+              $(this).text("已经结束了！");
+            }
+          })
+          //  开始执行倒计时的逻辑
+          .on("startUpdate", function () {
+            var me = $(this);
+            me.attr(
+              "timeId",
+              setInterval(function () {
+                me.triggerHandler("updateEndTime");
+              }, 1000)
+            );
+          })
+          //  触发开始
+          .triggerHandler("startUpdate");
+        // 获取分页器的高度和获取屏幕的可视高度de高度差
+        this.$nextTick(() => {
+          console.log(
+            "this.$refs.pagination.offsetHeight--->",
+            this.$refs.pagination.offsetHeight
+          );
+          console.log(
+            "document.documentElement.clientHeight--->",
+            document.documentElement.clientHeight
+          );
+          this.heightDifference =
+            document.documentElement.clientHeight -
+            this.$refs.pagination.offsetHeight +
+            "px";
+        });
+
+        let _this = this; //赋值vue的this
+        window.onresize = () => {
+          // 获取分页器的高度和获取屏幕的可视高度de高度差
+          this.$nextTick(() => {
+            console.log(
+              "this.$refs.pagination.offsetHeight--->",
+              this.$refs.pagination.offsetHeight
+            );
+            console.log(
+              "document.documentElement.clientHeight--->",
+              document.documentElement.clientHeight
+            );
+            this.heightDifference =
+              document.documentElement.clientHeight -
+              this.$refs.pagination.offsetHeight +
+              "px";
+          });
+        };
+      },
+
+      //注销window.onresize事件
+      destroyed() {
+        window.onresize = null;
+      },
+      watch: {},
+    });
+  </script>
+</html>
